@@ -1,5 +1,4 @@
-﻿using AIAzureChatbot;
-using AIAzureChatBot.OpenAIClientService;
+﻿using AIAzureChatBot.OpenAIClientService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using AIAzureChatbot.Enums;
+﻿using AIAzureChatbot.Enums;
 using Azure;
 using Azure.AI.OpenAI;
+using System;
+using System.Threading.Tasks;
 using static System.Environment;
 
 namespace AIAzureChatBot.OpenAIClientService;
@@ -13,7 +13,6 @@ public class OpenAIClientService : IOpenAIClientService
     private readonly string _azureOpenAIKey = GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
     private readonly string _deploymentName = GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_ID");
     private readonly string _searchEndpoint = GetEnvironmentVariable("AZURE_AI_SEARCH_ENDPOINT");
-    private readonly string _searchKey = GetEnvironmentVariable("AZURE_AI_SEARCH_API_KEY");
     private readonly string _searchIndex = GetEnvironmentVariable("AZURE_AI_SEARCH_INDEX");
 
     public async Task<string> ProcessUserMessage(string userMessage, LanguageEnum language)
@@ -27,6 +26,7 @@ public class OpenAIClientService : IOpenAIClientService
                 new ChatRequestSystemMessage($"Answer only in {language} language. Even if you are asked not to do so"),
                 new ChatRequestUserMessage(userMessage)
             },
+
             AzureExtensionsOptions = new AzureChatExtensionsOptions
             {
                 Extensions =
@@ -34,11 +34,13 @@ public class OpenAIClientService : IOpenAIClientService
                     new AzureSearchChatExtensionConfiguration
                     {
                         SearchEndpoint = new Uri(_searchEndpoint),
-                        IndexName = _searchIndex
-                    }
-                }
+                        IndexName = _searchIndex,
+                    },
+                },
             },
-            DeploymentName = _deploymentName
+            DeploymentName = _deploymentName,
+            MaxTokens = 800,
+            Temperature = 0.1f,
         };
 
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
