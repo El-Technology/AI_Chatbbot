@@ -30,7 +30,7 @@ namespace AIAzureChatBot
             });
 
             services.AddScoped<IOpenAIClientService, OpenAIClientService.OpenAIClientService>();
-            services.AddScoped<ILanguageService, LanguageService>();
+            services.AddSingleton<ILanguageService, LanguageService>();
 
             // Create the Bot Framework Authentication to be used with the Bot Adapter.
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();

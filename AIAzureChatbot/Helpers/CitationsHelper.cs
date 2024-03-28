@@ -40,7 +40,7 @@ public static class CitationsHelper
         var rootObject = JsonConvert.DeserializeObject<RootObject>(jsonString);
         
         var response = new StringBuilder();
-       
+        response.AppendLine("Resources:");
         foreach (var citation in rootObject.Citations)
         {
             response.AppendLine(citation.Title + "-" + citation.Url);
