@@ -43,7 +43,6 @@ public static class CitationsHelper
        
         foreach (var citation in rootObject.Citations)
         {
-            // Append the content with line breaks
             response.AppendLine(citation.Title + "-" + citation.Url);
             response.AppendLine();
         }
