@@ -56,8 +56,6 @@ namespace AIAzureChatBot
                 {
                     endpoints.MapControllers();
                 });
-
-            // app.UseHttpsRedirection();
         }
     }
 }

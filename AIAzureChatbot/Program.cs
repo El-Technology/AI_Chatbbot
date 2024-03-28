@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using DotNetEnv;
 
 namespace AIAzureChatBot
 {
@@ -9,6 +10,7 @@ namespace AIAzureChatBot
     {
         public static void Main(string[] args)
         {
+            Env.Load();
             CreateHostBuilder(args).Build().Run();
         }
 

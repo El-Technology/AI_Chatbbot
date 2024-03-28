@@ -1,4 +1,5 @@
 ﻿using AIAzureChatbot.Enums;
+using AIAzureChatbot.Helpers;
 using Azure;
 using Azure.AI.OpenAI;
 using System;
@@ -13,6 +14,7 @@ public class OpenAIClientService : IOpenAIClientService
     private readonly string _azureOpenAIKey = GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
     private readonly string _deploymentName = GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_ID");
     private readonly string _searchEndpoint = GetEnvironmentVariable("AZURE_AI_SEARCH_ENDPOINT");
+    private readonly string _searchKey = GetEnvironmentVariable("SEARCH_KEY");
     private readonly string _searchIndex = GetEnvironmentVariable("AZURE_AI_SEARCH_INDEX");
 
     public async Task<string> ProcessUserMessage(string userMessage, LanguageEnum language)
@@ -31,21 +33,26 @@ public class OpenAIClientService : IOpenAIClientService
             {
                 Extensions =
                 {
-                    new AzureSearchChatExtensionConfiguration
+                    new AzureCognitiveSearchChatExtensionConfiguration
                     {
                         SearchEndpoint = new Uri(_searchEndpoint),
                         IndexName = _searchIndex,
+                        Key = _searchKey
                     },
                 },
             },
             DeploymentName = _deploymentName,
             MaxTokens = 800,
-            Temperature = 0.1f,
+            Temperature = 0.55f,
         };
 
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
-        var responseMessage = response.Value.Choices[0].Message.Content;
+        var responseMessage = response.Value.Choices[0].Message;
 
-        return responseMessage;
+        var citations = responseMessage.AzureExtensionsContext.Messages[0];
+        var resp = CitationsHelper.ReplaceDocWithSuperscript(responseMessage.Content);
+        var links = CitationsHelper.ConvertWithClickableLinks(citations.Content);
+
+        return string.Concat(resp,"\n", links);
     }
 }

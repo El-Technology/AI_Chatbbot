@@ -1,6 +1,4 @@
-﻿// Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.22.0
-
-using AIAzureChatbot.Enums;
+﻿using AIAzureChatbot.Enums;
 using AIAzureChatBot.OpenAIClientService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -33,8 +31,7 @@ public class ChatBot : ActivityHandler
     {
         if (_welcomeMessagePerformed)
         {
-            var response = "Here we go!";
-            //await _openAIClientService.ProcessUserMessage(turnContext.Activity.Text);
+            var response = await _openAIClientService.ProcessUserMessage(turnContext.Activity.Text, _responseLanguage);
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }
         else
@@ -47,7 +44,7 @@ public class ChatBot : ActivityHandler
                     _responseLanguage = ProcessLanguage(cardAction.Text);
                 }
             }
-            var response = LanguageWelcome(_responseLanguage);
+            var response = GetGreetingsInSelectedLanguage(_responseLanguage);
             _welcomeMessagePerformed = true;
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }
@@ -76,7 +73,7 @@ public class ChatBot : ActivityHandler
     {
         var parsedLanguage = Enum.TryParse(language, out LanguageEnum parsedLang)
             ? parsedLang
-            : LanguageEnum.Default;
+            : LanguageEnum.English;
 
         return parsedLanguage switch
         {
@@ -86,7 +83,7 @@ public class ChatBot : ActivityHandler
         };
     }
 
-    private string LanguageWelcome(LanguageEnum language)
+    private string GetGreetingsInSelectedLanguage(LanguageEnum language)
     {
         return language switch
         {
