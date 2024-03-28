@@ -11,7 +11,7 @@ namespace AIAzureChatbot.Services
         private LanguageEnum _currentLanguage = LanguageEnum.English;
         private readonly ResourceManager _resourceManager;
 
-        public LanguageService(ResourceManager resourceManager)
+        public LanguageService()
         {
             _resourceManager = new ResourceManager("AIAzureChatbot.Resources.Resources", typeof(Program).Assembly);
         }

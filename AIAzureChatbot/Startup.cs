@@ -1,4 +1,6 @@
-﻿using AIAzureChatBot.OpenAIClientService;
+﻿using AIAzureChatbot.Interfaces;
+using AIAzureChatBot.OpenAIClientService;
+using AIAzureChatbot.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -28,6 +30,7 @@ namespace AIAzureChatBot
             });
 
             services.AddScoped<IOpenAIClientService, OpenAIClientService.OpenAIClientService>();
+            services.AddScoped<ILanguageService, LanguageService>();
 
             // Create the Bot Framework Authentication to be used with the Bot Adapter.
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
