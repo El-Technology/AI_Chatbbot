@@ -1,4 +1,5 @@
 ﻿using AIAzureChatbot.Enums;
+using AIAzureChatbot.Interfaces;
 using AIAzureChatBot.OpenAIClientService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -6,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AIAzureChatbot.Interfaces;
-using AIAzureChatbot.Services;
 
 namespace AIAzureChatBot;
 
