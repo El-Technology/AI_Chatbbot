@@ -49,9 +49,6 @@ public class OpenAIClientService : IOpenAIClientService
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
         var responseMessage = response.Value.Choices[0].Message;
 
-        var citations = responseMessage.AzureExtensionsContext.Messages[0];
-        var resp = CitationsHelper.ReplaceDocWithSuperscript(responseMessage.Content) + CitationsHelper.ConvertWithClickableLinks(citations.Content);
-
-        return resp;
+        return CitationsHelper.ReplaceDocWithSuperscript(responseMessage.Content);
     }
 }

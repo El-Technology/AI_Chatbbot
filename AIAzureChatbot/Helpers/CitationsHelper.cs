@@ -34,23 +34,4 @@ public static class CitationsHelper
 
         return superscriptNumber;
     }
-
-    public static string ConvertWithClickableLinks(string jsonString)
-    {
-        var rootObject = JsonConvert.DeserializeObject<RootObject>(jsonString);
-
-        if (rootObject.Citations.Count <= 0)
-            return string.Empty;
-
-        var response = new StringBuilder();
-        response.AppendLine("\nResources:");
-        
-        foreach (var citation in rootObject.Citations)
-        {
-            response.AppendLine(citation.Title + "-" + citation.Url);
-            response.AppendLine();
-        }
-
-        return response.ToString();
-    }
 }
