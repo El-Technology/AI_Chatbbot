@@ -43,16 +43,15 @@ public class OpenAIClientService : IOpenAIClientService
             },
             DeploymentName = _deploymentName,
             MaxTokens = 800,
-            Temperature = 0.55f,
+            Temperature = 0.1f,
         };
 
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
         var responseMessage = response.Value.Choices[0].Message;
 
         var citations = responseMessage.AzureExtensionsContext.Messages[0];
-        var resp = CitationsHelper.ReplaceDocWithSuperscript(responseMessage.Content);
-        var links = CitationsHelper.ConvertWithClickableLinks(citations.Content);
+        var resp = CitationsHelper.ReplaceDocWithSuperscript(responseMessage.Content) + CitationsHelper.ConvertWithClickableLinks(citations.Content);
 
-        return string.Concat(resp,"\n", links);
+        return resp;
     }
 }

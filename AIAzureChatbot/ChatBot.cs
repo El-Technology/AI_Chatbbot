@@ -7,22 +7,27 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AIAzureChatbot.Accessors;
+using AIAzureChatbot.Models;
 
 namespace AIAzureChatBot;
 
 public class ChatBot : ActivityHandler
 {
+    private readonly BotStateAccessor _stateAccessor;
     private readonly IOpenAIClientService _openAIClientService;
     private readonly ILanguageService _languageService;
 
-    public ChatBot(IOpenAIClientService openAIClientService, ILanguageService languageService)
+    public ChatBot(IOpenAIClientService openAIClientService, ILanguageService languageService, BotStateAccessor stateAccessor)
     {
+        _stateAccessor = stateAccessor;
         _openAIClientService = openAIClientService;
         _languageService = languageService;
     }
     protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
     {
-        if (_languageService.WelcomeMessagePerformed)
+        var conversationData = await _stateAccessor.ConversationDataAccessor.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
+        if (conversationData.IsWelcomeMessagePerformed)
         {
             var response = await _openAIClientService.ProcessUserMessage(turnContext.Activity.Text, _languageService.CurrentLanguage);
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
@@ -37,7 +42,10 @@ public class ChatBot : ActivityHandler
                     : LanguageEnum.English);
             }
             var response = _languageService.GetGreeting();
-            _languageService.WelcomeMessagePerformed = true;
+            conversationData.IsWelcomeMessagePerformed = true;
+            
+            await _stateAccessor.ConversationDataAccessor.SetAsync(turnContext, conversationData, cancellationToken);
+            await _stateAccessor.ConversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }
     }

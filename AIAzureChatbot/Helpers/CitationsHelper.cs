@@ -38,9 +38,13 @@ public static class CitationsHelper
     public static string ConvertWithClickableLinks(string jsonString)
     {
         var rootObject = JsonConvert.DeserializeObject<RootObject>(jsonString);
-        
+
+        if (rootObject.Citations.Count <= 0)
+            return string.Empty;
+
         var response = new StringBuilder();
-        response.AppendLine("Resources:");
+        response.AppendLine("\nResources:");
+        
         foreach (var citation in rootObject.Citations)
         {
             response.AppendLine(citation.Title + "-" + citation.Url);
