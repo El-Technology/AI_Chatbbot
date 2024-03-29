@@ -18,8 +18,6 @@ namespace AIAzureChatbot.Services
 
         public LanguageEnum CurrentLanguage => _currentLanguage;
 
-        public bool WelcomeMessagePerformed { get; set; } = false;
-
         public void SetLanguage(LanguageEnum language)
         {
             _currentLanguage = language;

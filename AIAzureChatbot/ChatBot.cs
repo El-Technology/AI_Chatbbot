@@ -34,13 +34,14 @@ public class ChatBot : ActivityHandler
         }
         else
         {
-            if (turnContext.Activity != null && !_languageService.WelcomeMessagePerformed)
+            if (turnContext.Activity != null && !conversationData.IsWelcomeMessagePerformed)
             {
                 var language = turnContext.Activity.Text;
                 _languageService.SetLanguage(Enum.TryParse<LanguageEnum>(language, out var parsedLanguage)
                     ? parsedLanguage
                     : LanguageEnum.English);
             }
+            
             var response = _languageService.GetGreeting();
             conversationData.IsWelcomeMessagePerformed = true;
             
