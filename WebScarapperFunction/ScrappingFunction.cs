@@ -1,7 +1,8 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using WebScrapperFunction.Scrapper;
 
-namespace WebScarapperFunction
+namespace WebScrapperFunction
 {
     public class ScrappingFunction
     {
@@ -13,8 +14,9 @@ namespace WebScarapperFunction
         }
 
         [Function("ScrappingFunction")]
-        public void Run([TimerTrigger("0 0 * * 6")] TimerInfo timerTimer)
+        public async Task Run([TimerTrigger("*/5 * * * *")] TimerInfo timerTimer)
         {
+            await WebScrapper.ParseReferences();
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             _logger.LogInformation($"Next timer schedule at: {timerTimer.ScheduleStatus.Next}");
         }
@@ -22,7 +24,7 @@ namespace WebScarapperFunction
 
     public class TimerInfo
     {
-        public ScheduleStatus ScheduleStatus { get; set; }
+        public ScheduleStatus ScheduleStatus { get; set; } = null!;
 
         public bool IsPastDue { get; set; }
     }

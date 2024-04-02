@@ -1,5 +1,4 @@
-﻿namespace Accessors.Models;
-
+﻿namespace WebScrapperFunction.Scrapper;
 public class ResourcesModel
 {
     public string Title { get; set; } = string.Empty;
