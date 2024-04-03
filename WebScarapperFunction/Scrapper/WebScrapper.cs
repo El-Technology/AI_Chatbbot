@@ -1,21 +1,33 @@
 ﻿using HtmlAgilityPack;
+using PuppeteerSharp;
 
 namespace WebScrapperFunction.Scrapper;
 
 public static class WebScrapper
 {
-    private const string WebsiteUrl = "https://learn.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings?tabs=isolated-process%2Cpython-v2&pivots=programming-language-csharp"; //"https://www.km.qa/pages/SiteMap.aspx";
-    private static readonly HttpClient HttpClient = new();
+    private const string WebsiteUrl = "https://www.km.qa/pages/SiteMap.aspx";
 
     public static async Task<List<ResourcesModel>> ParseReferences()
     {
-        var httpResponseMessage = await HttpClient.GetAsync(WebsiteUrl);
-        
-        EnsureSuccessStatusCode(httpResponseMessage);
+        var options = new LaunchOptions { Headless = true };
+        await using var browser = await Puppeteer.LaunchAsync(options);
+        await using var page = await browser.NewPageAsync();
 
-        var pageContentHtml = await httpResponseMessage.Content.ReadAsStringAsync();
+        await page.GoToAsync(WebsiteUrl, WaitUntilNavigation.Networkidle2);
 
-        var parsedContent = ParseLiElements(pageContentHtml);
+        var parsedContent = await page.EvaluateFunctionAsync<List<ResourcesModel>>(@"
+                () => {
+                    const parsedData = [];
+                    document.querySelectorAll('li > a').forEach(anchorNode => {
+                        const title = anchorNode.innerText.trim();
+                        const urlPath = anchorNode.getAttribute('href') || '';
+                        if (isValidUrlPath(urlPath, title)) {
+                            parsedData.push({ Title: title, UrlPath: urlPath });
+                        }
+                    });
+                    return parsedData;
+                }
+            ");
 
         return parsedContent;
     }
@@ -48,12 +60,14 @@ public static class WebScrapper
         foreach (var liNode in liNodes)
         {
             var anchorNode = liNode.SelectSingleNode(".//a");
-            var title = anchorNode?.InnerText.Trim() ?? string.Empty;
+            if(anchorNode == null) 
+                continue;
+            var title = HtmlEntity.DeEntitize(anchorNode.InnerText.Trim());
 
             var urlPath = anchorNode?.GetAttributeValue("href", string.Empty) ?? string.Empty;
 
 
-            if(!string.IsNullOrEmpty(urlPath) && !string.IsNullOrEmpty(title))
+            if(IsValidUrlPath(urlPath, title))
                 parsedData.Add(new ResourcesModel
                 {
                     Title = title,
@@ -62,5 +76,11 @@ public static class WebScrapper
         }
 
         return parsedData;
+    }
+
+    private static bool IsValidUrlPath(string urlPath, string title)
+    {
+        return !string.IsNullOrEmpty(urlPath) && !string.IsNullOrEmpty(title) &&
+               (urlPath.StartsWith("https") || urlPath.StartsWith("/"));
     }
 }

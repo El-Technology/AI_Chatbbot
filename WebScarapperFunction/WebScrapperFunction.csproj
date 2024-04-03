@@ -12,6 +12,8 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.0.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Azure.Workflows.WebJobs.Extension" Version="1.58.21" />
+    <PackageReference Include="PuppeteerSharp" Version="15.1.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
