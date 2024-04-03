@@ -10,39 +10,16 @@ public static class WebScrapper
     public static async Task<List<ResourcesModel>> ParseReferences()
     {
         var options = new LaunchOptions { Headless = true };
+        await new BrowserFetcher().DownloadAsync();
         await using var browser = await Puppeteer.LaunchAsync(options);
         await using var page = await browser.NewPageAsync();
 
         await page.GoToAsync(WebsiteUrl, WaitUntilNavigation.Networkidle2);
 
-        var parsedContent = await page.EvaluateFunctionAsync<List<ResourcesModel>>(@"
-                () => {
-                    const parsedData = [];
-                    document.querySelectorAll('li > a').forEach(anchorNode => {
-                        const title = anchorNode.innerText.trim();
-                        const urlPath = anchorNode.getAttribute('href') || '';
-                        if (isValidUrlPath(urlPath, title)) {
-                            parsedData.push({ Title: title, UrlPath: urlPath });
-                        }
-                    });
-                    return parsedData;
-                }
-            ");
+        var pageContentHtml = await page.GetContentAsync();
+        var parsedContent = ParseLiElements(pageContentHtml);
 
         return parsedContent;
-    }
-
-    private static void EnsureSuccessStatusCode(HttpResponseMessage httpResponseMessage)
-    {
-        if(httpResponseMessage.IsSuccessStatusCode)
-            return;
-
-        var statusCode = httpResponseMessage.StatusCode;
-        var httpContent = httpResponseMessage.Content.ReadAsStringAsync();
-        var reasonPhrase = httpResponseMessage.ReasonPhrase;
-
-        throw new HttpRequestException(
-            $"Status code: {(int)statusCode}-{statusCode}. Reason phrase: ({reasonPhrase}. Content: ({httpContent})");
     }
 
     public static List<ResourcesModel> ParseLiElements(string htmlContent)
@@ -52,27 +29,34 @@ public static class WebScrapper
         var doc = new HtmlDocument();
         doc.LoadHtml(htmlContent);
 
-        var liNodes = doc.DocumentNode.SelectNodes("//li");
+        // Selecting div elements with class "row"
+        var rowDivs = doc.DocumentNode.SelectNodes("//div[contains(@class,'SiteMap-Container')]");
 
-        if (liNodes == null) 
+        if (rowDivs == null)
             return parsedData;
 
-        foreach (var liNode in liNodes)
+        foreach (var rowDiv in rowDivs)
         {
-            var anchorNode = liNode.SelectSingleNode(".//a");
-            if(anchorNode == null) 
+            // Selecting li elements within the current row div
+            var liNodes = rowDiv.SelectNodes(".//li/a");
+
+            if (liNodes == null)
                 continue;
-            var title = HtmlEntity.DeEntitize(anchorNode.InnerText.Trim());
 
-            var urlPath = anchorNode?.GetAttributeValue("href", string.Empty) ?? string.Empty;
+            foreach (var anchorNode in liNodes)
+            {
+                var title = HtmlEntity.DeEntitize(anchorNode.InnerText.Trim());
+                var urlPath = anchorNode.GetAttributeValue("href", string.Empty);
 
-
-            if(IsValidUrlPath(urlPath, title))
-                parsedData.Add(new ResourcesModel
+                if (IsValidUrlPath(urlPath, title))
                 {
-                    Title = title,
-                    UrlPath = urlPath
-                });
+                    parsedData.Add(new ResourcesModel
+                    {
+                        Title = title,
+                        UrlPath = urlPath
+                    });
+                }
+            }
         }
 
         return parsedData;
