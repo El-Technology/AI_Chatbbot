@@ -19,7 +19,7 @@ namespace WebScrapperFunction
         [Function("ScrappingFunction")]
         public async Task Run([TimerTrigger("*/1 * * * *")] TimerInfo timerTimer)
         {
-            //await _openAIClientService.ProcessTitles(new List<string>{"First title", "Second title"});
+            await _openAIClientService.ProcessTitles(new List<string>{"First title", "Second title"});
             await WebScrapper.ParseReferences();
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             _logger.LogInformation($"Next timer schedule at: {timerTimer.ScheduleStatus.Next}");

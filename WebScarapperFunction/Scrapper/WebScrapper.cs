@@ -29,33 +29,28 @@ public static class WebScrapper
         var doc = new HtmlDocument();
         doc.LoadHtml(htmlContent);
 
-        // Selecting div elements with class "row"
-        var rowDivs = doc.DocumentNode.SelectNodes("//div[contains(@class,'SiteMap-Container')]");
+        var rowDiv = doc.DocumentNode.SelectNodes("//div[contains(@class,'SiteMap-Container')]").FirstOrDefault();
 
-        if (rowDivs == null)
+        if (rowDiv == null)
             return parsedData;
 
-        foreach (var rowDiv in rowDivs)
+        var liNodes = rowDiv.SelectNodes(".//li/a");
+
+        if (liNodes == null)
+            return parsedData;
+
+        foreach (var anchorNode in liNodes)
         {
-            // Selecting li elements within the current row div
-            var liNodes = rowDiv.SelectNodes(".//li/a");
+            var title = HtmlEntity.DeEntitize(anchorNode.InnerText.Trim());
+            var urlPath = anchorNode.GetAttributeValue("href", string.Empty);
 
-            if (liNodes == null)
-                continue;
-
-            foreach (var anchorNode in liNodes)
+            if (IsValidUrlPath(urlPath, title))
             {
-                var title = HtmlEntity.DeEntitize(anchorNode.InnerText.Trim());
-                var urlPath = anchorNode.GetAttributeValue("href", string.Empty);
-
-                if (IsValidUrlPath(urlPath, title))
+                parsedData.Add(new ResourcesModel
                 {
-                    parsedData.Add(new ResourcesModel
-                    {
-                        Title = title,
-                        UrlPath = urlPath
-                    });
-                }
+                    Title = title,
+                    UrlPath = urlPath
+                });
             }
         }
 
