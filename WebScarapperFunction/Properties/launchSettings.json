@@ -3,7 +3,10 @@
     "WebScarapperFunction": {
       "commandName": "Project",
       "commandLineArgs": "--port 7298",
-      "launchBrowser": false
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ConnectionString": "Host=aichatbotdatabase.postgres.database.azure.com;Port=5432;Database=postgres;Username=aichatbotadmin;Password=Szjib28q!kcWNVw"
+      }
+      }
     }
-  }
 }

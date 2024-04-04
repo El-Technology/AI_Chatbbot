@@ -1,8 +1,8 @@
-﻿using Azure.AI.OpenAI;
+﻿using WebScrapperFunction.Accessors.Models;
 
 namespace WebScrapperFunction.OpenAIEmbeddingClient;
 
 public interface IOpenAIClientService
 {
-    Task<List<EmbeddingItem>> ProcessTitles(IEnumerable<string> titlesToEmbed);
+    Task EmbedResCollectionAsync(IEnumerable<ResourcesModel> resourcesToEmbed);
 }

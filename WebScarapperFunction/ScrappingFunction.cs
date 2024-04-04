@@ -1,5 +1,7 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using WebScrapperFunction.Accessors;
+using WebScrapperFunction.Accessors.Models;
 using WebScrapperFunction.OpenAIEmbeddingClient;
 using WebScrapperFunction.Scrapper;
 
@@ -8,19 +10,34 @@ namespace WebScrapperFunction
     public class ScrappingFunction
     {
         private readonly ILogger _logger;
-        private readonly IOpenAIClientService _openAIClientService;
+        private readonly IResourcesModelAccessor _resourcesModelAccessor;
 
-        public ScrappingFunction(ILoggerFactory loggerFactory, IOpenAIClientService openAIClientService)
+        public ScrappingFunction(ILoggerFactory loggerFactory, IResourcesModelAccessor resourcesModelAccessor)
         {
             _logger = loggerFactory.CreateLogger<ScrappingFunction>();
-            _openAIClientService = openAIClientService;
+            _resourcesModelAccessor = resourcesModelAccessor;
         }
 
         [Function("ScrappingFunction")]
         public async Task Run([TimerTrigger("*/1 * * * *")] TimerInfo timerTimer)
         {
-            await _openAIClientService.ProcessTitles(new List<string>{"First title", "Second title"});
-            await WebScrapper.ParseReferences();
+            var existingContent = new List<ResourcesModel>()
+            {
+                new()
+                {
+                    Title = "Test1",
+                    UrlPath = "google.com"
+                },
+                new()
+                {
+                    Title = "Test2",
+                    UrlPath = "google.com"
+                }
+            };
+            //await _openAIClientService.EmbedResCollectionAsync(listEmbeddings);
+            //var existingContent = await WebScrapper.ParseReferences();
+
+            await _resourcesModelAccessor.UpdateResources(existingContent);
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             _logger.LogInformation($"Next timer schedule at: {timerTimer.ScheduleStatus.Next}");
         }
