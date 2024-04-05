@@ -14,14 +14,14 @@ public class ResourcesModelAccessor : IResourcesModelAccessor
         _context = context;
         _openAIClientService = openAIClientService;
     }
-    public async Task UpdateResources(List<ResourcesModel> parsedContent)
+    public async Task UpdateResources(List<ResourcesModel> parsedResources)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             var existingResources = await _context.ResourcesModels.ToListAsync();
 
-            CompareResources(existingResources, parsedContent, out var resToRemove, out var resToAdd);
+            CompareResources(existingResources, parsedResources, out var resToRemove, out var resToAdd);
 
             if (resToRemove.Any())
                 _context.ResourcesModels.RemoveRange(resToRemove);

@@ -2,14 +2,15 @@
 using Azure.AI.OpenAI;
 using Pgvector;
 using WebScrapperFunction.Accessors.Models;
+using WebScrapperFunction.Common;
 
 namespace WebScrapperFunction.OpenAIEmbeddingClient;
 
 public class OpenAIClientService : IOpenAIClientService
 {
-    private readonly string _endpoint = "https://aichatbot-service-001.openai.azure.com/";
-    private readonly string _key = "2c4d3ad2b7564de8af497cd363e2fb74";
-    private readonly string _deploymentName = "text-embedding-ada-002";
+    private readonly string _endpoint = EnvironmentVariables.EmbeddingEndpoint!;
+    private readonly string _key = EnvironmentVariables.EmbeddingKey!;
+    private readonly string _deploymentName = EnvironmentVariables.EmbeddingDeploymentName!;
 
     public async Task EmbedResCollectionAsync(IEnumerable<ResourcesModel> resourcesToEmbed)
     {

@@ -19,26 +19,11 @@ namespace WebScrapperFunction
         }
 
         [Function("ScrappingFunction")]
-        public async Task Run([TimerTrigger("*/1 * * * *")] TimerInfo timerTimer)
+        public async Task Run([TimerTrigger("*/5 * * * *")] TimerInfo timerTimer)
         {
-            var existingContent = new List<ResourcesModel>()
-            {
-                new()
-                {
-                    Title = "Test1",
-                    UrlPath = "google.com"
-                },
-                new()
-                {
-                    Title = "Test2",
-                    UrlPath = "google.com"
-                }
-            };
-            //await _openAIClientService.EmbedResCollectionAsync(listEmbeddings);
-            //var existingContent = await WebScrapper.ParseReferences();
-
+            var existingContent = await WebScrapper.ParseReferences();
             await _resourcesModelAccessor.UpdateResources(existingContent);
-            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow}");
             _logger.LogInformation($"Next timer schedule at: {timerTimer.ScheduleStatus.Next}");
         }
     }

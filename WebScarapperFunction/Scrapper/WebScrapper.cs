@@ -1,12 +1,13 @@
 ﻿using HtmlAgilityPack;
 using PuppeteerSharp;
 using WebScrapperFunction.Accessors.Models;
+using WebScrapperFunction.Common;
 
 namespace WebScrapperFunction.Scrapper;
 
 public static class WebScrapper
 {
-    private const string WebsiteUrl = "https://www.km.qa/pages/SiteMap.aspx";
+    private static readonly string WebsiteUrl = EnvironmentVariables.SourceSiteUrl!;
 
     public static async Task<List<ResourcesModel>> ParseReferences()
     {

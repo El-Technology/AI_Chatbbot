@@ -4,6 +4,6 @@ namespace WebScrapperFunction.Accessors
 {
     public interface IResourcesModelAccessor
     {
-        Task UpdateResources(List<ResourcesModel> parsedContent);
+        Task UpdateResources(List<ResourcesModel> parsedResources);
     }
 }
