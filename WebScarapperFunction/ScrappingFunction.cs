@@ -1,8 +1,6 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using WebScrapperFunction.Accessors;
-using WebScrapperFunction.Accessors.Models;
-using WebScrapperFunction.OpenAIEmbeddingClient;
 using WebScrapperFunction.Scrapper;
 
 namespace WebScrapperFunction
@@ -19,7 +17,7 @@ namespace WebScrapperFunction
         }
 
         [Function("ScrappingFunction")]
-        public async Task Run([TimerTrigger("*/5 * * * *")] TimerInfo timerTimer)
+        public async Task Run([TimerTrigger("0 0 * * 0")] TimerInfo timerTimer)
         {
             var existingContent = await WebScrapper.ParseReferences();
             await _resourcesModelAccessor.UpdateResources(existingContent);
