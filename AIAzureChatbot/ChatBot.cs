@@ -16,12 +16,12 @@ public class ChatBot : ActivityHandler
 {
     private readonly BotStateAccessor _stateAccessor;
     private readonly ILanguageService _languageService;
-    private readonly IResourcesService _resourcesService;
+    private readonly ICommunicationService _communicationService;
 
-    public ChatBot(ILanguageService languageService, BotStateAccessor stateAccessor, IResourcesService resourcesService)
+    public ChatBot(ILanguageService languageService, BotStateAccessor stateAccessor, ICommunicationService communicationService)
     {
         _stateAccessor = stateAccessor;
-        _resourcesService = resourcesService;
+        _communicationService = communicationService;
         _languageService = languageService;
     }
     protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -30,8 +30,8 @@ public class ChatBot : ActivityHandler
         if (conversationData.IsWelcomeMessagePerformed)
         {
             //var textResponse = await _openAIClientService.ProcessUserMessageGpt(turnContext.Activity.Text, _languageService.CurrentLanguage);
-            var resources = await _resourcesService.GetResources(turnContext.Activity.Text);
-            await turnContext.SendActivityAsync(MessageFactory.Text("Ok", "Ok"), cancellationToken);
+            var response = await _communicationService.GenerateResponseMessageAsync(turnContext.Activity.Text, _languageService.CurrentLanguage);
+            await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }
         else
         {

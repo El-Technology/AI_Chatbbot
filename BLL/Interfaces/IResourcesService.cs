@@ -1,8 +1,8 @@
-﻿using DLL.Models;
+﻿using BLL.Dtos;
 
 namespace BLL.Interfaces;
 
 public interface IResourcesService
 {
-    Task<List<ResourcesModel>> GetResources(string textUserInput);
+    Task<List<ResourcesModelDto>> GetRelatedResourcesAsync(string textUserInput);
 }

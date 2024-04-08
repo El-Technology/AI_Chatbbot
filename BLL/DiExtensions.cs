@@ -13,6 +13,7 @@ public static class DiExtensions
         return services
             .AddSingleton<ILanguageService>(provider => new LanguageService(baseName, assembly))
             .AddScoped<IOpenAIClientService, OpenAIClientService>()
-            .AddScoped<IResourcesService, ResourcesService>();
+            .AddScoped<IResourcesService, ResourcesService>()
+            .AddScoped<ICommunicationService, CommunicationService>();
     }
 }
