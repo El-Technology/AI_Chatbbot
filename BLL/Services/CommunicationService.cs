@@ -1,5 +1,6 @@
 ﻿using AIAzureChatbot.Enums;
 using AIAzureChatBot.OpenAIClientService;
+using BLL.Helpers;
 using BLL.Interfaces;
 using System.Text;
 
@@ -19,15 +20,7 @@ public class CommunicationService : ICommunicationService
     public async Task<string> GenerateResponseMessageAsync(string userInputMessage, LanguageEnum currentLanguage)
     {
         var relatedResources = await _resourceService.GetRelatedResourcesAsync(userInputMessage);
-        var sb = new StringBuilder();
 
-        if (!relatedResources.Any()) 
-            return sb.ToString();
-        
-        foreach (var resource in relatedResources)
-        {
-            sb.AppendLine(resource.Title);
-        }
-        return sb.ToString();
+        return BotMarkdownHelper.GetResourceLinksMarkdownAsync(relatedResources);
     }
 }
