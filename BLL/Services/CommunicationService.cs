@@ -16,6 +16,7 @@ public class CommunicationService : ICommunicationService
         _openAIClientService = openAIClientService;
     }
 
+    ///<inheritdoc cref="ICommunicationService.GenerateResponseMessageAsync(string, LanguageEnum)"/>
     public async Task<string> GenerateResponseMessageAsync(string userInputMessage, LanguageEnum currentLanguage)
     {
         //var textResponseTask = _openAIClientService.GenerateGptResponseAsync(userInputMessage, currentLanguage);
@@ -23,14 +24,15 @@ public class CommunicationService : ICommunicationService
 
         //await Task.WhenAll(relatedResourcesTask, textResponseTask);
 
-        //// Retrieve results
         //var relatedResources = await relatedResourcesTask;
         //var textResponse = await textResponseTask;
 
         //var gptResponseMessage = CitationsHelper.RemoveDocN(textResponse);
-        //var resourcesResponse = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr:true);
+        //var resourcesResponse = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: true);
 
-        //var response = resourcesResponse + resourcesResponse;
+        //var response = gptResponseMessage + resourcesResponse;
+
+        //return response;
 
         var relatedResources = await _resourceService.GetRelatedResourcesAsync(userInputMessage);
 

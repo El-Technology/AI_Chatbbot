@@ -1,7 +1,6 @@
-﻿namespace AIAzureChatbot.Models
+﻿namespace DLL.Models;
+
+public class ConversationData
 {
-    public class ConversationData
-    {
-        public bool IsWelcomeMessagePerformed = false;
-    }
+    public bool IsWelcomeMessagePerformed = false;
 }

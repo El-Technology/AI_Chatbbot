@@ -16,6 +16,7 @@ public class ResourcesAccessor : IResourcesAccessor
         _context = context;
     }
 
+    ///<inheritdoc cref="IResourcesAccessor.GetRelatedResources(Vector, int)"/>
     public async Task<List<ResourcesModel>> GetRelatedResources(Vector requestVector, int responseCount)
     {
         return await _context.ResourcesModels
@@ -24,10 +25,12 @@ public class ResourcesAccessor : IResourcesAccessor
             .ToListAsync();
     }
 
+    ///<inheritdoc cref="IResourcesAccessor.GetRelatedResources(Vector, double)"/>
     public async Task<List<ResourcesModel>> GetRelatedResources(Vector requestVector, double vectorDistance)
     {
         return await _context.ResourcesModels
             .Where(x => x.Embedding!.CosineDistance(requestVector) < vectorDistance)
+            .OrderBy(x => x.Embedding!.CosineDistance(requestVector))
             .ToListAsync();
     }
 }

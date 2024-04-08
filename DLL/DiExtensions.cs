@@ -1,7 +1,7 @@
-﻿using AIAzureChatbot.Models;
-using DLL.Accessors;
+﻿using DLL.Accessors;
 using DLL.Context;
 using DLL.Interfaces;
+using DLL.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

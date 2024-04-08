@@ -16,9 +16,10 @@ public class ResourcesService : IResourcesService
         _openAIClientService = openAIClientService;
     }
 
+    /// <inheritdoc cref="IResourcesService.GetRelatedResourcesAsync(string)"/>
     public async Task<List<ResourcesModelDto>> GetRelatedResourcesAsync(string textUserInput)
     {
-        var userEmbeddedRequest = await _openAIClientService.EmbedUserRequest(textUserInput);
+        var userEmbeddedRequest = await _openAIClientService.EmbedUserRequestAsync(textUserInput);
         var relatedResourcesList = await _resourcesAccessor.GetRelatedResources(userEmbeddedRequest, 0.15d);
 
         var response = MapResourcesToDtos(relatedResourcesList);
@@ -26,6 +27,11 @@ public class ResourcesService : IResourcesService
         return response;
     }
 
+    /// <summary>
+    /// Converts a collection of ResourcesModel objects to a list of ResourcesModelDto objects.
+    /// </summary>
+    /// <param name="resources">The collection of ResourcesModel objects to be converted.</param>
+    /// <returns>A list of ResourcesModelDto objects containing the mapped data.</returns>
     private static List<ResourcesModelDto> MapResourcesToDtos(IEnumerable<ResourcesModel> resources)
     {
         return resources.Select(resource => new ResourcesModelDto

@@ -1,4 +1,4 @@
-﻿using AIAzureChatbot.Models;
+﻿using DLL.Models;
 using Microsoft.Bot.Builder;
 
 namespace DLL.Accessors

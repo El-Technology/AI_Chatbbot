@@ -3,24 +3,28 @@ using Azure;
 using Azure.AI.OpenAI;
 using BLL.Interfaces;
 using Common;
-using Common.Helpers;
 using Pgvector;
 
 namespace BLL.Services;
 
 public class OpenAIClientService : IOpenAIClientService
 {
+    // OpenAI GPT-3.5 Turbo Environment Variables
     private readonly string _azureOpenAiGptEndpoint = EnvironmentVariables.AzureOpenAiGptEndpoint!;
     private readonly string _azureOpenAIGptKey = EnvironmentVariables.AzureOpenAIGptKey!;
     private readonly string _deploymentGptName = EnvironmentVariables.DeploymentGptName!;
-    private readonly string _searchEndpoint = "https://kmchatbot-search-zuk2xzn7vbusc.search.windows.net";
+
+    //Azure Cognitive Search Environment Variables
+    private readonly string _searchEndpoint = EnvironmentVariables.SearchEndpoint!;
     private readonly string _searchKey = EnvironmentVariables.SearchKey!;
     private readonly string _searchIndex = EnvironmentVariables.SearchIndex!;
 
+    //Azure ADA-02 Environment Variables
     private readonly string _endpoint = EnvironmentVariables.EmbeddingEndpoint!;
     private readonly string _key = EnvironmentVariables.EmbeddingKey!;
-    private readonly string _deploymentName = EnvironmentVariables.EmbeddingDeploymentName!;
+    private readonly string _deploymentAdaName = EnvironmentVariables.EmbeddingDeploymentName!;
 
+    ///<inheritdoc cref="IOpenAIClientService.GenerateGptResponseAsync(string, LanguageEnum)"/>>
     public async Task<string> GenerateGptResponseAsync(string userMessage, LanguageEnum language)
     {
         var client = new OpenAIClient(new Uri(_azureOpenAiGptEndpoint), new AzureKeyCredential(_azureOpenAIGptKey));
@@ -56,14 +60,15 @@ public class OpenAIClientService : IOpenAIClientService
         return responseMessage;
     }
 
-    public async Task<Vector> EmbedUserRequest(string request)
+    ///<inheritdoc cref="IOpenAIClientService.EmbedUserRequestAsync(string)"/>>
+    public async Task<Vector> EmbedUserRequestAsync(string request)
     {
         var client = new OpenAIClient(new Uri(_endpoint), new AzureKeyCredential(_key));
 
         var chatEmbeddingOptions = new EmbeddingsOptions
         {
             Input = { request },
-            DeploymentName = _deploymentName
+            DeploymentName = _deploymentAdaName
         };
 
         var embeddingResponse = await client.GetEmbeddingsAsync(chatEmbeddingOptions);

@@ -1,5 +1,4 @@
 ﻿using AIAzureChatbot.Enums;
-using AIAzureChatbot.Models;
 using DLL.Accessors;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -8,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BLL.Interfaces;
+using DLL.Models;
 
 namespace AIAzureChatBot;
 

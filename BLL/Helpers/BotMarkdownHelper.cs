@@ -7,6 +7,13 @@ public static class BotMarkdownHelper
 {
     private const string HrMarkdown = "---";
     private const string WebUrl = "https://km.qa";
+
+    /// <summary>
+    /// Generates a Markdown formatted string containing links to related resources.
+    /// </summary>
+    /// <param name="resources">A list of ResourcesModelDto objects representing the resources to link.</param>
+    /// <param name="shouldHaveHr">A flag indicating whether to include a horizontal rule (HR) before the list (optional).</param>
+    /// <returns>A string containing the Markdown formatted resource links, or an empty string if no resources are provided.</returns>
     public static string GetResourceLinksMarkdown(List<ResourcesModelDto> resources, bool shouldHaveHr)
     {
         var sb = new StringBuilder();
