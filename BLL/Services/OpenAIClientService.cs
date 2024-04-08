@@ -1,7 +1,7 @@
 ﻿using AIAzureChatbot.Enums;
-using AIAzureChatBot.OpenAIClientService;
 using Azure;
 using Azure.AI.OpenAI;
+using BLL.Interfaces;
 using Common;
 using Common.Helpers;
 using Pgvector;
@@ -21,7 +21,7 @@ public class OpenAIClientService : IOpenAIClientService
     private readonly string _key = EnvironmentVariables.EmbeddingKey!;
     private readonly string _deploymentName = EnvironmentVariables.EmbeddingDeploymentName!;
 
-    public async Task<string> ProcessUserMessageGpt(string userMessage, LanguageEnum language)
+    public async Task<string> GenerateGptResponseAsync(string userMessage, LanguageEnum language)
     {
         var client = new OpenAIClient(new Uri(_azureOpenAiGptEndpoint), new AzureKeyCredential(_azureOpenAIGptKey));
 
@@ -50,18 +50,10 @@ public class OpenAIClientService : IOpenAIClientService
             Temperature = 0.1f,
         };
 
-        try
-        {
-            var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
-            var responseMessage = response.Value.Choices[0].Message;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
+        var responseMessage = response.Value.Choices[0].Message.Content;
 
-        return CitationsHelper.ReplaceDocWithSuperscript("sdasdas");
+        return responseMessage;
     }
 
     public async Task<Vector> EmbedUserRequest(string request)

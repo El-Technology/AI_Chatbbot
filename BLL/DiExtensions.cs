@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using AIAzureChatBot.OpenAIClientService;
 using BLL.Interfaces;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;

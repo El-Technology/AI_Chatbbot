@@ -1,6 +1,5 @@
 ﻿using AIAzureChatbot.Enums;
 using AIAzureChatbot.Models;
-using AIAzureChatBot.OpenAIClientService;
 using DLL.Accessors;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -29,7 +28,7 @@ public class ChatBot : ActivityHandler
         var conversationData = await _stateAccessor.ConversationDataAccessor.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
         if (conversationData.IsWelcomeMessagePerformed)
         {
-            //var textResponse = await _openAIClientService.ProcessUserMessageGpt(turnContext.Activity.Text, _languageService.CurrentLanguage);
+            //var textResponse = await _openAIClientService.GenerateGptResponseAsync(turnContext.Activity.Text, _languageService.CurrentLanguage);
             var response = await _communicationService.GenerateResponseMessageAsync(turnContext.Activity.Text, _languageService.CurrentLanguage);
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }

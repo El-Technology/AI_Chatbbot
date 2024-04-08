@@ -1,5 +1,4 @@
-﻿using AIAzureChatBot.OpenAIClientService;
-using BLL.Dtos;
+﻿using BLL.Dtos;
 using BLL.Interfaces;
 using DLL.Interfaces;
 using DLL.Models;
@@ -20,7 +19,7 @@ public class ResourcesService : IResourcesService
     public async Task<List<ResourcesModelDto>> GetRelatedResourcesAsync(string textUserInput)
     {
         var userEmbeddedRequest = await _openAIClientService.EmbedUserRequest(textUserInput);
-        var relatedResourcesList = await _resourcesAccessor.GetRelatedResources(userEmbeddedRequest);
+        var relatedResourcesList = await _resourcesAccessor.GetRelatedResources(userEmbeddedRequest, 0.15d);
 
         var response = MapResourcesToDtos(relatedResourcesList);
 

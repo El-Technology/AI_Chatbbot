@@ -1,8 +1,7 @@
 ﻿using AIAzureChatbot.Enums;
-using AIAzureChatBot.OpenAIClientService;
 using BLL.Helpers;
 using BLL.Interfaces;
-using System.Text;
+using Common.Helpers;
 
 namespace BLL.Services;
 
@@ -19,8 +18,25 @@ public class CommunicationService : ICommunicationService
 
     public async Task<string> GenerateResponseMessageAsync(string userInputMessage, LanguageEnum currentLanguage)
     {
+        //var textResponseTask = _openAIClientService.GenerateGptResponseAsync(userInputMessage, currentLanguage);
+        //var relatedResourcesTask = _resourceService.GetRelatedResourcesAsync(userInputMessage);
+
+        //await Task.WhenAll(relatedResourcesTask, textResponseTask);
+
+        //// Retrieve results
+        //var relatedResources = await relatedResourcesTask;
+        //var textResponse = await textResponseTask;
+
+        //var gptResponseMessage = CitationsHelper.RemoveDocN(textResponse);
+        //var resourcesResponse = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr:true);
+
+        //var response = resourcesResponse + resourcesResponse;
+
         var relatedResources = await _resourceService.GetRelatedResourcesAsync(userInputMessage);
 
-        return BotMarkdownHelper.GetResourceLinksMarkdownAsync(relatedResources);
+        var resourcesResponse1 = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: false);
+        var resourcesResponse2 = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: true);
+
+        return resourcesResponse1 + resourcesResponse2;
     }
 }

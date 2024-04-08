@@ -1,5 +1,5 @@
-﻿using AIAzureChatBot.OpenAIClientService;
-using BLL;
+﻿using BLL;
+using BLL.Interfaces;
 using Common;
 using DLL;
 using DLL.Accessors;

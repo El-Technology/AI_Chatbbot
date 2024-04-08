@@ -16,11 +16,18 @@ public class ResourcesAccessor : IResourcesAccessor
         _context = context;
     }
 
-    public async Task<List<ResourcesModel>> GetRelatedResources(Vector requestVector)
+    public async Task<List<ResourcesModel>> GetRelatedResources(Vector requestVector, int responseCount)
     {
         return await _context.ResourcesModels
             .OrderBy(x => x.Embedding!.CosineDistance(requestVector))
-            .Take(3)
+            .Take(responseCount)
+            .ToListAsync();
+    }
+
+    public async Task<List<ResourcesModel>> GetRelatedResources(Vector requestVector, double vectorDistance)
+    {
+        return await _context.ResourcesModels
+            .Where(x => x.Embedding!.CosineDistance(requestVector) < vectorDistance)
             .ToListAsync();
     }
 }

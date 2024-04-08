@@ -1,12 +1,11 @@
 ﻿using AIAzureChatbot.Enums;
-using System.Threading.Tasks;
 using Pgvector;
 
-namespace AIAzureChatBot.OpenAIClientService;
+namespace BLL.Interfaces;
 
 public interface IOpenAIClientService
 {
-    Task<string> ProcessUserMessageGpt(string userMessage, LanguageEnum language);
+    Task<string> GenerateGptResponseAsync(string userMessage, LanguageEnum language);
 
     Task<Vector> EmbedUserRequest(string request);
 }
