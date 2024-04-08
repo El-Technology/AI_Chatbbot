@@ -1,8 +1,7 @@
-﻿using Microsoft.Bot.Builder;
-using System;
-using AIAzureChatbot.Models;
+﻿using AIAzureChatbot.Models;
+using Microsoft.Bot.Builder;
 
-namespace AIAzureChatbot.Accessors
+namespace DLL.Accessors
 {
     public class BotStateAccessor
     {

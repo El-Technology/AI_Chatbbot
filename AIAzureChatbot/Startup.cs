@@ -1,7 +1,8 @@
-﻿using AIAzureChatbot.Accessors;
-using AIAzureChatbot.Interfaces;
-using AIAzureChatBot.OpenAIClientService;
-using AIAzureChatbot.Services;
+﻿using AIAzureChatBot.OpenAIClientService;
+using BLL;
+using Common;
+using DLL;
+using DLL.Accessors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -10,7 +11,6 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AIAzureChatbot.Models;
 
 namespace AIAzureChatBot
 {
@@ -31,8 +31,7 @@ namespace AIAzureChatBot
                 options.SerializerSettings.MaxDepth = HttpHelper.BotMessageSerializerSettings.MaxDepth;
             });
 
-            services.AddScoped<IOpenAIClientService, OpenAIClientService.OpenAIClientService>();
-            services.AddSingleton<ILanguageService, LanguageService>();
+            services.AddScoped<IOpenAIClientService, BLL.Services.OpenAIClientService>();
 
             // Create the Bot Framework Authentication to be used with the Bot Adapter.
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
@@ -43,13 +42,8 @@ namespace AIAzureChatBot
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, ChatBot>();
 
-            IStorage storage = new MemoryStorage();
-            var conversationState = new ConversationState(storage);
-           
-            services.AddSingleton(sp => new BotStateAccessor(conversationState)
-            {
-                ConversationDataAccessor = conversationState.CreateProperty<ConversationData>(BotStateAccessor.ConversationDataName),
-            });
+            services.AddDataLayer(EnvironmentVariables.ConnectionString!);
+            services.AddBusinessLayer("AIAzureChatbot.Resources.Resources", typeof(Program).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

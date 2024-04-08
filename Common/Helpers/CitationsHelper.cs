@@ -1,9 +1,6 @@
-﻿using AIAzureChatbot.Models;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using System.Text;
+﻿using System.Text.RegularExpressions;
 
-namespace AIAzureChatbot.Helpers;
+namespace Common.Helpers;
 
 public static class CitationsHelper
 {

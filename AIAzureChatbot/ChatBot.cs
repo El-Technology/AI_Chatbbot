@@ -1,27 +1,27 @@
 ﻿using AIAzureChatbot.Enums;
-using AIAzureChatbot.Interfaces;
+using AIAzureChatbot.Models;
 using AIAzureChatBot.OpenAIClientService;
+using DLL.Accessors;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AIAzureChatbot.Accessors;
-using AIAzureChatbot.Models;
+using BLL.Interfaces;
 
 namespace AIAzureChatBot;
 
 public class ChatBot : ActivityHandler
 {
     private readonly BotStateAccessor _stateAccessor;
-    private readonly IOpenAIClientService _openAIClientService;
     private readonly ILanguageService _languageService;
+    private readonly IResourcesService _resourcesService;
 
-    public ChatBot(IOpenAIClientService openAIClientService, ILanguageService languageService, BotStateAccessor stateAccessor)
+    public ChatBot(ILanguageService languageService, BotStateAccessor stateAccessor, IResourcesService resourcesService)
     {
         _stateAccessor = stateAccessor;
-        _openAIClientService = openAIClientService;
+        _resourcesService = resourcesService;
         _languageService = languageService;
     }
     protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -29,8 +29,9 @@ public class ChatBot : ActivityHandler
         var conversationData = await _stateAccessor.ConversationDataAccessor.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
         if (conversationData.IsWelcomeMessagePerformed)
         {
-            var response = await _openAIClientService.ProcessUserMessage(turnContext.Activity.Text, _languageService.CurrentLanguage);
-            await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
+            //var textResponse = await _openAIClientService.ProcessUserMessageGpt(turnContext.Activity.Text, _languageService.CurrentLanguage);
+            var resources = await _resourcesService.GetResources(turnContext.Activity.Text);
+            await turnContext.SendActivityAsync(MessageFactory.Text("Ok", "Ok"), cancellationToken);
         }
         else
         {
@@ -41,16 +42,20 @@ public class ChatBot : ActivityHandler
                     ? parsedLanguage
                     : LanguageEnum.English);
             }
-            
+
             var response = _languageService.GetGreeting();
             conversationData.IsWelcomeMessagePerformed = true;
-            
+
             await _stateAccessor.ConversationDataAccessor.SetAsync(turnContext, conversationData, cancellationToken);
             await _stateAccessor.ConversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
+
             await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
         }
     }
-    protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+    protected override async Task OnMembersAddedAsync(
+        IList<ChannelAccount> membersAdded,
+        ITurnContext<IConversationUpdateActivity> turnContext,
+        CancellationToken cancellationToken)
     {
         foreach (var member in membersAdded)
         {
