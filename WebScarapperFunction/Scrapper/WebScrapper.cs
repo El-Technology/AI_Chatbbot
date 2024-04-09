@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using PuppeteerSharp;
-using WebScrapperFunction.Accessors.Models;
 using WebScrapperFunction.Common;
+using WebScrapperFunction.Models;
 
 namespace WebScrapperFunction.Scrapper;
 

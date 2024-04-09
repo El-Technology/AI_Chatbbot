@@ -1,4 +1,4 @@
-﻿using WebScrapperFunction.Accessors.Models;
+﻿using WebScrapperFunction.Models;
 
 namespace WebScrapperFunction.Accessors
 {

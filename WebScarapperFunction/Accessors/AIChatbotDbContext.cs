@@ -1,6 +1,6 @@
-﻿using WebScrapperFunction.Accessors.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Pgvector.EntityFrameworkCore;
+using WebScrapperFunction.Models;
 
 namespace WebScrapperFunction.Accessors;
 

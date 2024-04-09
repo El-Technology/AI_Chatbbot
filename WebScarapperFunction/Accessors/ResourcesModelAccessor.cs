@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebScrapperFunction.Accessors.Models;
+using WebScrapperFunction.Models;
 using WebScrapperFunction.OpenAIEmbeddingClient;
 
 namespace WebScrapperFunction.Accessors;

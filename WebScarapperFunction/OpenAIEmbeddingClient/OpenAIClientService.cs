@@ -1,8 +1,8 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
 using Pgvector;
-using WebScrapperFunction.Accessors.Models;
 using WebScrapperFunction.Common;
+using WebScrapperFunction.Models;
 
 namespace WebScrapperFunction.OpenAIEmbeddingClient;
 

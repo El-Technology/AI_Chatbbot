@@ -1,6 +1,6 @@
 ﻿using Pgvector;
 
-namespace WebScrapperFunction.Accessors.Models;
+namespace WebScrapperFunction.Models;
 public class ResourcesModel
 {
     public Guid Id { get; set; }
