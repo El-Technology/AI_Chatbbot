@@ -16,7 +16,7 @@ public static class WebScrapper
         await using var browser = await Puppeteer.LaunchAsync(options);
         await using var page = await browser.NewPageAsync();
 
-        await page.GoToAsync(WebsiteUrl, WaitUntilNavigation.Networkidle2);
+        await page.GoToAsync(WebsiteUrl, WaitUntilNavigation.Networkidle0);
 
         var pageContentHtml = await page.GetContentAsync();
         var parsedContent = ParseLiElements(pageContentHtml);

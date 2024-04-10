@@ -14,6 +14,7 @@ public class ResourcesModelAccessor : IResourcesModelAccessor
         _context = context;
         _openAIClientService = openAIClientService;
     }
+
     public async Task UpdateResources(List<ResourcesModel> parsedResources)
     {
         await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -44,9 +45,9 @@ public class ResourcesModelAccessor : IResourcesModelAccessor
     }
 
     private static void CompareResources(
-        IReadOnlyCollection<ResourcesModel> existingResources, 
-        IReadOnlyCollection<ResourcesModel> parsedResources, 
-        out List<ResourcesModel> resToRemove, 
+        IReadOnlyCollection<ResourcesModel> existingResources,
+        IReadOnlyCollection<ResourcesModel> parsedResources,
+        out List<ResourcesModel> resToRemove,
         out List<ResourcesModel> resToAdd)
     {
         resToRemove = new List<ResourcesModel>();

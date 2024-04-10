@@ -5,11 +5,11 @@
       "commandLineArgs": "--port 7298",
       "launchBrowser": false,
       "environmentVariables": {
-        "ConnectionString": "Host=aichatbotdatabase.postgres.database.azure.com;Port=5432;Database=postgres;Username=aichatbotadmin;Password=Szjib28q!kcWNVw",
-        "EmbeddingEndpoint": "https://aichatbot-service-001.openai.azure.com/",
-        "EmbeddingKey": "2c4d3ad2b7564de8af497cd363e2fb74",
-        "EmbeddingDeploymentName": "text-embedding-ada-002",
-        "SourceSiteUrl": "https://www.km.qa/pages/SiteMap.aspx"
+        "ConnectionString": "",
+        "EmbeddingEndpoint": "",
+        "EmbeddingKey": "",
+        "EmbeddingDeploymentName": "",
+        "SourceSiteUrl": ""
       }
       }
     }
