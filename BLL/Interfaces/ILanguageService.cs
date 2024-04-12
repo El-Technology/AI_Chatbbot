@@ -1,4 +1,4 @@
-﻿using AIAzureChatbot.Enums;
+﻿using DLL.Enums;
 
 namespace BLL.Interfaces;
 

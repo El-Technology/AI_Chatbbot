@@ -1,5 +1,4 @@
-﻿using AIAzureChatbot.Enums;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using BLL.Interfaces;
 using Common.Helpers;
 
@@ -16,29 +15,22 @@ public class CommunicationService : ICommunicationService
         _openAIClientService = openAIClientService;
     }
 
-    ///<inheritdoc cref="ICommunicationService.GenerateResponseMessageAsync(string, LanguageEnum)"/>
-    public async Task<string> GenerateResponseMessageAsync(string userInputMessage, LanguageEnum currentLanguage)
+    ///<inheritdoc cref="ICommunicationService.GenerateResponseMessageAsync(string)"/>
+    public async Task<string> GenerateResponseMessageAsync(string userInputMessage)
     {
-        //var textResponseTask = _openAIClientService.GenerateGptResponseAsync(userInputMessage, currentLanguage);
-        //var relatedResourcesTask = _resourceService.GetRelatedResourcesAsync(userInputMessage);
+        var textResponseTask = _openAIClientService.GenerateGptResponseAsync(userInputMessage);
+        var relatedResourcesTask = _resourceService.GetRelatedResourcesAsync(userInputMessage);
 
-        //await Task.WhenAll(relatedResourcesTask, textResponseTask);
+        await Task.WhenAll(relatedResourcesTask, textResponseTask);
 
-        //var relatedResources = await relatedResourcesTask;
-        //var textResponse = await textResponseTask;
+        var relatedResources = await relatedResourcesTask;
+        var textResponse = await textResponseTask;
 
-        //var gptResponseMessage = CitationsHelper.RemoveDocN(textResponse);
-        //var resourcesResponse = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: true);
+        var gptResponseMessage = CitationsHelper.RemoveDocN(textResponse);
+        var resourcesResponse = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: false);
 
-        //var response = gptResponseMessage + resourcesResponse;
+        var response = string.Concat(gptResponseMessage, resourcesResponse);
 
-        //return response;
-
-        var relatedResources = await _resourceService.GetRelatedResourcesAsync(userInputMessage);
-
-        var resourcesResponse1 = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: false);
-        var resourcesResponse2 = BotMarkdownHelper.GetResourceLinksMarkdown(relatedResources, shouldHaveHr: true);
-
-        return resourcesResponse1 + resourcesResponse2;
+        return response;
     }
 }

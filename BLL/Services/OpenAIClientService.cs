@@ -1,5 +1,4 @@
-﻿using AIAzureChatbot.Enums;
-using Azure;
+﻿using Azure;
 using Azure.AI.OpenAI;
 using BLL.Interfaces;
 using Common;
@@ -9,6 +8,8 @@ namespace BLL.Services;
 
 public class OpenAIClientService : IOpenAIClientService
 {
+    private readonly ILanguageService _languageService;
+
     // OpenAI GPT-3.5 Turbo Environment Variables
     private readonly string _azureOpenAiGptEndpoint = EnvironmentVariables.AzureOpenAiGptEndpoint!;
     private readonly string _azureOpenAIGptKey = EnvironmentVariables.AzureOpenAIGptKey!;
@@ -24,16 +25,21 @@ public class OpenAIClientService : IOpenAIClientService
     private readonly string _key = EnvironmentVariables.EmbeddingKey!;
     private readonly string _deploymentAdaName = EnvironmentVariables.EmbeddingDeploymentName!;
 
-    ///<inheritdoc cref="IOpenAIClientService.GenerateGptResponseAsync(string, LanguageEnum)"/>>
-    public async Task<string> GenerateGptResponseAsync(string userMessage, LanguageEnum language)
+    public OpenAIClientService(ILanguageService languageService)
+    {
+        _languageService = languageService;
+    }
+
+    ///<inheritdoc cref="IOpenAIClientService.GenerateGptResponseAsync(string)"/>>
+    public async Task<string> GenerateGptResponseAsync(string userMessage)
     {
         var client = new OpenAIClient(new Uri(_azureOpenAiGptEndpoint), new AzureKeyCredential(_azureOpenAIGptKey));
-
+        
         var chatCompletionsOptions = new ChatCompletionsOptions
         {
             Messages =
             {
-                new ChatRequestSystemMessage($"Answer only in {language} language. Even if you are asked not to do so"),
+                new ChatRequestSystemMessage($"Answer only in {_languageService.CurrentLanguage} language. Even if you are asked not to do so"),
                 new ChatRequestUserMessage(userMessage)
             },
 

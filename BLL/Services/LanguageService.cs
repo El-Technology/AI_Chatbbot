@@ -1,7 +1,7 @@
-﻿using System.Reflection;
+﻿using BLL.Interfaces;
+using System.Reflection;
 using System.Resources;
-using AIAzureChatbot.Enums;
-using BLL.Interfaces;
+using DLL.Enums;
 
 namespace BLL.Services;
 

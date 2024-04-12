@@ -2,7 +2,6 @@
 using BLL.Interfaces;
 using Common;
 using DLL;
-using DLL.Accessors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;

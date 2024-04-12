@@ -1,4 +1,5 @@
 ﻿using BLL.Dtos;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DLL.Interfaces;
 using DLL.Models;
@@ -9,18 +10,21 @@ public class ResourcesService : IResourcesService
 {
     private readonly IResourcesAccessor _resourcesAccessor;
     private readonly IOpenAIClientService _openAIClientService;
+    private readonly ILanguageService _languageService;
 
-    public ResourcesService(IResourcesAccessor resourcesAccessor, IOpenAIClientService openAIClientService)
+    public ResourcesService(IResourcesAccessor resourcesAccessor, IOpenAIClientService openAIClientService, ILanguageService languageService)
     {
         _resourcesAccessor = resourcesAccessor;
         _openAIClientService = openAIClientService;
+        _languageService = languageService;
     }
 
     /// <inheritdoc cref="IResourcesService.GetRelatedResourcesAsync(string)"/>
     public async Task<List<ResourcesModelDto>> GetRelatedResourcesAsync(string textUserInput)
     {
+        var cosineDistance = EmbeddingHelper.GetCosineDistanceByLanguage(_languageService.CurrentLanguage);
         var userEmbeddedRequest = await _openAIClientService.EmbedUserRequestAsync(textUserInput);
-        var relatedResourcesList = await _resourcesAccessor.GetRelatedResources(userEmbeddedRequest, 0.15d);
+        var relatedResourcesList = await _resourcesAccessor.GetRelatedResources(userEmbeddedRequest, cosineDistance);
 
         var response = MapResourcesToDtos(relatedResourcesList);
 

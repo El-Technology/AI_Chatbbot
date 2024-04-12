@@ -1,4 +1,4 @@
-﻿namespace AIAzureChatbot.Enums;
+﻿namespace DLL.Enums;
 
 public enum LanguageEnum
 {

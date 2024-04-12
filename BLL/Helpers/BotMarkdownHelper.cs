@@ -1,5 +1,5 @@
-﻿using System.Text;
-using BLL.Dtos;
+﻿using BLL.Dtos;
+using System.Text;
 
 namespace BLL.Helpers;
 
@@ -19,14 +19,16 @@ public static class BotMarkdownHelper
         var sb = new StringBuilder();
 
         if (!resources.Any())
-            return sb.ToString();
+            return string.Empty;
+
+        sb.AppendLine("\n");
 
         if (shouldHaveHr)
             sb.AppendLine(HrMarkdown);
 
         foreach (var resource in resources)
         {
-            if (resource.UrlPath == null || !resource.UrlPath.StartsWith("/"))
+            if (resource.UrlPath == null || resource.UrlPath.StartsWith("/"))
                 resource.UrlPath = WebUrl + resource.UrlPath;
 
             sb.AppendLine($"[{resource.Title}]({resource.UrlPath})");

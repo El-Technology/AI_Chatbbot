@@ -1,5 +1,4 @@
-﻿using AIAzureChatbot.Enums;
-using Pgvector;
+﻿using Pgvector;
 
 namespace BLL.Interfaces;
 
@@ -10,9 +9,8 @@ public interface IOpenAIClientService
     /// potentially incorporating relevant information from Azure Cognitive Search.
     /// </summary>
     /// <param name="userMessage">The user's message to be responded to.</param>
-    /// <param name="language">The language to use for the response from LanguageEnum.</param>
     /// <returns>The generated response message as a string.</returns>
-    Task<string> GenerateGptResponseAsync(string userMessage, LanguageEnum language);
+    Task<string> GenerateGptResponseAsync(string userMessage);
 
     /// <summary>
     /// Generates a vector embedding for a user's request using OpenAI's API.
