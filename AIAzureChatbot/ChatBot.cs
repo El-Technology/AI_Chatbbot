@@ -26,6 +26,9 @@ public class ChatBot : ActivityHandler
     protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
     {
         var conversationData = await _stateAccessor.ConversationDataAccessor.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
+
+        await turnContext.SendActivityAsync(new Activity { Type = ActivityTypes.Typing }, cancellationToken);
+
         if (conversationData.IsWelcomeMessagePerformed)
         {
             var response = await _communicationService.GenerateResponseMessageAsync(turnContext.Activity.Text);
