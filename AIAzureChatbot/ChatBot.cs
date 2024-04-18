@@ -63,29 +63,26 @@ public class ChatBot : ActivityHandler
             if (member.Id == turnContext.Activity.Recipient.Id)
                 continue;
 
-            var activities = new IActivity[]
-            {
+            IActivity[] activities = {
                 MessageFactory.Text(_languageService.GetWarning(LanguageEnum.English)),
-                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.Arabic))
+                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.Arabic)),
             };
 
-            await turnContext.SendActivitiesAsync(activities, cancellationToken);
-            await SendSuggestedActionsAsync(turnContext, cancellationToken);
-        }
-    }
-
-    private static async Task SendSuggestedActionsAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-    {
-        var reply = MessageFactory.Text("Choose language: ");
-
-        reply.SuggestedActions = new SuggestedActions
-        {
-            Actions = new List<CardAction>
+            AttachSuggestedActions((Activity)activities[^1], new List<CardAction>
             {
                 new() { Title = "English", Type = ActionTypes.ImBack, Value = LanguageEnum.English.ToString() },
                 new() { Title = "Arabic", Type = ActionTypes.ImBack, Value = LanguageEnum.Arabic.ToString() }
-            },
+            });
+
+            await turnContext.SendActivitiesAsync(activities, cancellationToken);
+        }
+    }
+
+    private void AttachSuggestedActions(Activity activity, IList<CardAction> actionsToAttach)
+    {
+        activity.SuggestedActions = new SuggestedActions
+        {
+            Actions = actionsToAttach
         };
-        await turnContext.SendActivityAsync(reply, cancellationToken);
     }
 }
