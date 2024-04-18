@@ -65,20 +65,20 @@ public class ChatBot : ActivityHandler
 
             IActivity[] activities = {
                 MessageFactory.Text(_languageService.GetWarning(LanguageEnum.English)),
-                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.Arabic)),
+                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.Arabic))
             };
 
             AttachSuggestedActions((Activity)activities[^1], new List<CardAction>
             {
                 new() { Title = "English", Type = ActionTypes.ImBack, Value = LanguageEnum.English.ToString() },
-                new() { Title = "Arabic", Type = ActionTypes.ImBack, Value = LanguageEnum.Arabic.ToString() }
+                new() { Title = "العربية", Type = ActionTypes.ImBack, Value = LanguageEnum.Arabic.ToString() }
             });
 
             await turnContext.SendActivitiesAsync(activities, cancellationToken);
         }
     }
 
-    private void AttachSuggestedActions(Activity activity, IList<CardAction> actionsToAttach)
+    private static void AttachSuggestedActions(IMessageActivity activity, IList<CardAction> actionsToAttach)
     {
         activity.SuggestedActions = new SuggestedActions
         {
