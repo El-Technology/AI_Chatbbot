@@ -1,7 +1,10 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
+using BLL.Dtos;
 using BLL.Interfaces;
 using Common;
+using DLL.Enums;
+using Newtonsoft.Json.Linq;
 using Pgvector;
 
 namespace BLL.Services;
@@ -31,7 +34,7 @@ public class OpenAIClientService : IOpenAIClientService
     }
 
     ///<inheritdoc cref="IOpenAIClientService.GenerateGptResponseAsync(string)"/>>
-    public async Task<string> GenerateGptResponseAsync(string userMessage)
+    public async Task<GptResponse> GenerateGptResponseAsync(string userMessage)
     {
         var client = new OpenAIClient(new Uri(_azureOpenAiGptEndpoint), new AzureKeyCredential(_azureOpenAIGptKey));
         
@@ -39,7 +42,7 @@ public class OpenAIClientService : IOpenAIClientService
         {
             Messages =
             {
-                new ChatRequestSystemMessage($"Answer only in {_languageService.CurrentLanguage} language. Even if you are asked not to do so"),
+                new ChatRequestSystemMessage($"Please provide responses in {_languageService.CurrentLanguage} only. Make sure every response is in {_languageService.CurrentLanguage}."),
                 new ChatRequestUserMessage(userMessage)
             },
 
@@ -61,9 +64,19 @@ public class OpenAIClientService : IOpenAIClientService
         };
 
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);
+        var resources = response.Value.Choices[0].Message.AzureExtensionsContext.Messages[0].Content;
         var responseMessage = response.Value.Choices[0].Message.Content;
 
-        return responseMessage;
+        var intentList = new List<string>();
+        
+        if (_languageService.CurrentLanguage != LanguageEnum.English)
+            return new GptResponse { Response = responseMessage, Intents = intentList };
+        
+        var jsonObject = JObject.Parse(resources);
+        var intentArray = JArray.Parse(jsonObject["intent"]!.ToString());
+        intentList = intentArray.ToObject<List<string>>();
+
+        return new GptResponse { Response = responseMessage, Intents = intentList ?? new List<string>() };
     }
 
     ///<inheritdoc cref="IOpenAIClientService.EmbedUserRequestAsync(string)"/>>

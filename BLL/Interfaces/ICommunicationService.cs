@@ -1,4 +1,6 @@
-﻿namespace BLL.Interfaces;
+﻿using BLL.Dtos;
+
+namespace BLL.Interfaces;
 
 public interface ICommunicationService
 {
@@ -6,6 +8,6 @@ public interface ICommunicationService
     /// Generates a comprehensive response to a user's input message, combining a GPT-3 generated response with relevant resources.
     /// </summary>
     /// <param name="userInputMessage">The user's message to respond to.</param>
-    /// <returns>A string containing the combined response, including both text and resource links.</returns>
-    Task<string> GenerateResponseMessageAsync(string userInputMessage);
+    /// <returns>An object containing the combined response, including both text and resource links as Response and intents to continue conversation as SuggestedIntents.</returns>
+    Task<ResponseActivity> GenerateResponseMessageAsync(string userInputMessage);
 }

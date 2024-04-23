@@ -36,4 +36,9 @@ public static class BotMarkdownHelper
 
         return sb.ToString();
     }
+
+    public static string ToRightAlignedArabic(this string text)
+    {
+        return char.ConvertFromUtf32(0x202E) + text + char.ConvertFromUtf32(0x202C);
+    }
 }
