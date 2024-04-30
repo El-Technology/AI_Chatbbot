@@ -27,4 +27,18 @@ public interface ILanguageService
     /// <param name="language">The language for which to retrieve the warning message (e.g., LanguageEnum.Arabic).</param>
     /// <returns>A string containing the warning message in the specified language, or null if not found.</returns>
     string? GetWarning(LanguageEnum language);
+
+    /// <summary>
+    /// Detects the language of the given text using the language detector.
+    /// </summary>
+    /// <param name="text">The text for which language detection is to be performed.</param>
+    /// <returns>
+    /// The ISO 639-3 language code representing the detected language of the input text.
+    /// </returns>
+    /// <remarks>
+    /// This method internally utilizes a language detector object initialized with
+    /// specific languages to be detected. The detected language is returned as an
+    /// ISO 639-1 language code.
+    /// </remarks>
+    string DetectLanguage(string text);
 }

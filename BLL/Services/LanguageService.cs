@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Resources;
 using DLL.Enums;
+using LanguageDetection;
 
 namespace BLL.Services;
 
@@ -9,6 +10,7 @@ public class LanguageService : ILanguageService
 {
     private LanguageEnum _currentLanguage = LanguageEnum.English;
     private readonly ResourceManager _resourceManager;
+    private readonly LanguageDetector _languageDetector;
 
     /// <summary>
     /// Initializes a new instance of the LanguageService class.
@@ -18,6 +20,8 @@ public class LanguageService : ILanguageService
     public LanguageService(string baseName, Assembly assembly)
     {
         _resourceManager = new ResourceManager(baseName, assembly);
+        _languageDetector = new LanguageDetector();
+        _languageDetector.AddLanguages("ara", "eng");
     }
 
     ///<inheritdoc cref="ILanguageService.CurrentLanguage"/>
@@ -49,5 +53,11 @@ public class LanguageService : ILanguageService
             LanguageEnum.Arabic => _resourceManager.GetString("WARNING_MESSAGE_AR"),
             _ => throw new ArgumentOutOfRangeException(nameof(_currentLanguage), _currentLanguage, null)
         };
+    }
+
+    ///<inheritdoc cref="ILanguageService.DetectLanguage(string)"/>
+    public string DetectLanguage(string text)
+    {
+        return _languageDetector.Detect(text); 
     }
 }

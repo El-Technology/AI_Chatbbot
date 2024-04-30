@@ -1,10 +1,10 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
 using BLL.Dtos;
+using BLL.Helpers;
 using BLL.Interfaces;
 using Common;
 using DLL.Enums;
-using Newtonsoft.Json.Linq;
 using Pgvector;
 
 namespace BLL.Services;
@@ -42,7 +42,7 @@ public class OpenAIClientService : IOpenAIClientService
         {
             Messages =
             {
-                new ChatRequestSystemMessage($"Please provide responses in {_languageService.CurrentLanguage} only. Make sure every response is in {_languageService.CurrentLanguage}."),
+                new ChatRequestUserMessage($"Please provide responses in {_languageService.CurrentLanguage} only. Make sure every response is in {_languageService.CurrentLanguage}."),
                 new ChatRequestUserMessage(userMessage)
             },
 
@@ -71,12 +71,10 @@ public class OpenAIClientService : IOpenAIClientService
         
         if (_languageService.CurrentLanguage != LanguageEnum.English)
             return new GptResponse { Response = responseMessage, Intents = intentList };
-        
-        var jsonObject = JObject.Parse(resources);
-        var intentArray = JArray.Parse(jsonObject["intent"]!.ToString());
-        intentList = intentArray.ToObject<List<string>>();
 
-        return new GptResponse { Response = responseMessage, Intents = intentList ?? new List<string>() };
+        intentList = JsonHelper.ParseIntents(resources);
+
+        return new GptResponse { Response = responseMessage, Intents = intentList };
     }
 
     ///<inheritdoc cref="IOpenAIClientService.EmbedUserRequestAsync(string)"/>>

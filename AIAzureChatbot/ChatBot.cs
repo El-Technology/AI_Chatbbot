@@ -1,4 +1,5 @@
-﻿using BLL.Helpers;
+﻿using System;
+using BLL.Helpers;
 using BLL.Interfaces;
 using DLL.Accessors;
 using DLL.Enums;
@@ -17,11 +18,18 @@ public class ChatBot : ActivityHandler
     private const string ArabicTitle =  "العربية";
     private const string EnglishTitle = "English";
 
+    private const string ArabicIsoCode = "ara";
+    private const string ArabicLocaleCode = ActivityHelper.ArabicLocaleCode;
+
     private readonly BotStateAccessor _stateAccessor;
     private readonly ILanguageService _languageService;
     private readonly ICommunicationService _communicationService;
 
-    public ChatBot(ILanguageService languageService, BotStateAccessor stateAccessor, ICommunicationService communicationService)
+    public ChatBot(
+        ILanguageService languageService, 
+        BotStateAccessor stateAccessor, 
+        ICommunicationService communicationService
+        )
     {
         _stateAccessor = stateAccessor;
         _communicationService = communicationService;
@@ -39,9 +47,14 @@ public class ChatBot : ActivityHandler
 
             var responseActivity = MessageFactory.Text(response.Response, response.Response);
 
+            var detectedLanguage = _languageService.DetectLanguage(response.Response);
+            
+            if(detectedLanguage.Equals(ArabicIsoCode, StringComparison.InvariantCulture))
+                responseActivity.ChannelData = new { locale = ArabicLocaleCode };
+
             var activitiesList = response.SuggestedIntents.Select(suggestion => new CardAction { Title = suggestion, Type = ActionTypes.ImBack, Value = suggestion }).ToList();
 
-            AttachSuggestedActions(responseActivity, activitiesList);
+            ActivityHelper.AttachSuggestedActions(responseActivity, activitiesList);
 
             await turnContext.SendActivityAsync(responseActivity, cancellationToken);
         }
@@ -59,7 +72,12 @@ public class ChatBot : ActivityHandler
             await _stateAccessor.ConversationDataAccessor.SetAsync(turnContext, conversationData, cancellationToken);
             await _stateAccessor.ConversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
 
-            await turnContext.SendActivityAsync(MessageFactory.Text(response, response), cancellationToken);
+            var actionMessage = MessageFactory.Text(response, response);
+
+            if (_languageService.CurrentLanguage == LanguageEnum.Arabic)
+                actionMessage.ChannelData = new { locale = ArabicLocaleCode };
+
+            await turnContext.SendActivityAsync(actionMessage, cancellationToken);
         }
     }
     protected override async Task OnMembersAddedAsync(
@@ -69,15 +87,17 @@ public class ChatBot : ActivityHandler
     {
         foreach (var member in membersAdded)
         {
-            if (member.Id == turnContext.Activity.Recipient.Id)
+            if (turnContext.Activity?.Recipient is not null && member.Id == turnContext.Activity.Recipient.Id)
                 continue;
 
             IActivity[] activities = {
-                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.English)),
-                MessageFactory.Text(_languageService.GetWarning(LanguageEnum.Arabic)!.ToRightAlignedArabic())
+                ActivityHelper.CreateActivity(_languageService.GetWarning(LanguageEnum.English)!, LanguageEnum.English),
+                ActivityHelper.CreateActivity(_languageService.GetWarning(LanguageEnum.Arabic)!, LanguageEnum.Arabic)
             };
 
-            AttachSuggestedActions((Activity)activities[^1], new List<CardAction>
+            var lastActivity = activities[^1];
+
+            ActivityHelper.AttachSuggestedActions((Activity)lastActivity, new List<CardAction>
             {
                 new() { Title = EnglishTitle, Type = ActionTypes.ImBack, Value = EnglishTitle },
                 new() { Title = ArabicTitle, Type = ActionTypes.ImBack, Value = ArabicTitle }
@@ -85,13 +105,5 @@ public class ChatBot : ActivityHandler
 
             await turnContext.SendActivitiesAsync(activities, cancellationToken);
         }
-    }
-
-    private static void AttachSuggestedActions(IMessageActivity activity, IList<CardAction> actionsToAttach)
-    {
-        activity.SuggestedActions = new SuggestedActions
-        {
-            Actions = actionsToAttach
-        };
     }
 }
