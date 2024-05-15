@@ -1,12 +1,13 @@
 ﻿using BLL.Dtos;
 using System.Text;
+using Common;
 
 namespace BLL.Helpers;
 
 public static class BotMarkdownHelper
 {
     private const string HrMarkdown = "---";
-    private const string WebUrl = "https://km.qa";
+    private static readonly string WebUrl = EnvironmentVariables.WebResourcesPrefixUrl!;
 
     /// <summary>
     /// Generates a Markdown formatted string containing links to related resources.

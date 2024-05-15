@@ -14,4 +14,5 @@ public class EnvironmentVariables
     public static readonly string? SearchIndex = Environment.GetEnvironmentVariable("AZURE_AI_SEARCH_INDEX");
 
     public static readonly string? ConnectionString = Environment.GetEnvironmentVariable("ConnectionString")!;
+    public static readonly string? WebResourcesPrefixUrl = Environment.GetEnvironmentVariable("WebResourcesPrefixUrl")!;
 }
