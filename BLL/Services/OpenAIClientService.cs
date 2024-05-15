@@ -60,7 +60,7 @@ public class OpenAIClientService : IOpenAIClientService
             },
             DeploymentName = _deploymentGptName,
             MaxTokens = 800,
-            Temperature = 0.1f,
+            Temperature = 0
         };
 
         var response = await client.GetChatCompletionsAsync(chatCompletionsOptions);

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="FALLBACK_MESSAGE_AR" xml:space="preserve">
+    <value>Arabic fallback</value>
+  </data>
+  <data name="FALLBACK_MESSAGE_EN" xml:space="preserve">
+    <value>Sorry, we can not help you with this one</value>
+  </data>
   <data name="GREETING_AR" xml:space="preserve">
     <value>مرحباً، أنا مساعد كهرماء الذكي. كيف يمكنني مساعدتك اليوم؟</value>
   </data>

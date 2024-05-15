@@ -55,6 +55,16 @@ public class LanguageService : ILanguageService
         };
     }
 
+    public string? GetFallbackMessage()
+    {
+        return _currentLanguage switch
+        {
+            LanguageEnum.English => _resourceManager.GetString("FALLBACK_MESSAGE_EN"),
+            LanguageEnum.Arabic => _resourceManager.GetString("FALLBACK_MESSAGE_AR"),
+            _ => throw new ArgumentOutOfRangeException(nameof(_currentLanguage), _currentLanguage, null)
+        };
+    }
+
     ///<inheritdoc cref="ILanguageService.DetectLanguage(string)"/>
     public string DetectLanguage(string text)
     {

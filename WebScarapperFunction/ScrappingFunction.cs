@@ -19,7 +19,7 @@ public class ScrappingFunction
     }
 
     [Function("ScrappingFunction")]
-    public async Task Run([TimerTrigger("0 0 * * 0")] TimerInfo timerTimer)
+    public async Task Run([TimerTrigger("*/5 * * * *")] TimerInfo timerTimer)
     {
         try
         {

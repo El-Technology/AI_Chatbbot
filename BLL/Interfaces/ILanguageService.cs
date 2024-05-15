@@ -41,4 +41,6 @@ public interface ILanguageService
     /// ISO 639-1 language code.
     /// </remarks>
     string DetectLanguage(string text);
+
+    string? GetFallbackMessage();
 }
