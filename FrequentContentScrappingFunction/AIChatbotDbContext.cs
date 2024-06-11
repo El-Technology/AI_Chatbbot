@@ -5,13 +5,12 @@ namespace FrequentContentScrappingFunction;
 
 public sealed class AIChatbotDbContext : DbContext
 {
-    public DbSet<PageConfiguration> PageConfigurations { get; set; } = null!;
-
     public AIChatbotDbContext(DbContextOptions<AIChatbotDbContext> options)
         : base(options)
     {
-
     }
+
+    public DbSet<PageConfiguration> PageConfigurations { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -20,9 +19,6 @@ public sealed class AIChatbotDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<PageConfiguration>(entity =>
-        {
-            entity.HasKey(x => x.Id);
-        });
+        modelBuilder.Entity<PageConfiguration>(entity => { entity.HasKey(x => x.Id); });
     }
 }

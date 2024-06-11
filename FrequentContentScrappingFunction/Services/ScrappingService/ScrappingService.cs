@@ -1,111 +1,65 @@
-﻿using FrequentContentScrappingFunction.Helpers;
-using FrequentContentScrappingFunction.Models;
+﻿using FrequentContentScrappingFunction.Models;
+using FrequentContentScrappingFunction.Services.BrowserService;
+using FrequentContentScrappingFunction.Services.ContentExtractorService;
 using HtmlAgilityPack;
 using PuppeteerSharp;
-using System.Text;
 
 namespace FrequentContentScrappingFunction.Services.ScrappingService;
 
 public class ScrappingService : IScrappingService
 {
-    public async Task<AppendModel> ParseMultiplePagesToMemoryStream(int startId, int endId, string resourceLink,
-        string filepathToSaveName, string blockNode)
+    private readonly IBrowserService _browserService;
+    private readonly IContentExtractor _contentExtractor;
+
+    public ScrappingService(IBrowserService browserService, IContentExtractor contentExtractor)
     {
-        var tasks = new List<Task>();
+        _browserService = browserService;
+        _contentExtractor = contentExtractor;
+        _browserService.InitializeBrowserAsync().GetAwaiter().GetResult();
+    }
 
-        var options = new LaunchOptions { Headless = true };
-        await new BrowserFetcher().DownloadAsync();
-        await using var browser = await Puppeteer.LaunchAsync(options);
-        await using var page = await browser.NewPageAsync();
-
-        var ms = new MemoryStream();
+    public async Task<AppendModel> ParseMultiplePagesToMemoryStream(int startId, int endId, string resourceLink, string filepathToSaveName, string blockNode)
+    {
+        var tasks = new List<Task<MemoryStream>>();
 
         for (var i = startId; i <= endId; i++)
         {
             var currentId = i;
             tasks.Add(Task.Run(async () =>
             {
-                await using var page = await browser.NewPageAsync();
-                await page.GoToAsync(resourceLink + $"{currentId}", new NavigationOptions
-                {
-                    Timeout = 0,
-                    WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
-                });
+                await using var page = await _browserService.GetPageAsync();
+                await NavigateToPageAsync(page, $"{resourceLink}{currentId}");
                 var pageContentHtml = await page.GetContentAsync();
-                var stream = await ExtractBlockToMemoryStreamAsync(pageContentHtml, blockNode);
-                await stream.CopyToAsync(ms);
+                var stream = await _contentExtractor.ExtractBlockToMemoryStreamAsync(pageContentHtml, blockNode);
                 Console.WriteLine($"Extracted: {currentId}");
+                return stream;
             }));
         }
 
-        await Task.WhenAll(tasks);
-        await browser.CloseAsync();
+        var memoryStreams = await Task.WhenAll(tasks);
+
+        // Combine all MemoryStreams into one
+        var combinedStream = new MemoryStream();
+        foreach (var ms in memoryStreams)
+        {
+            ms.Position = 0;
+            await ms.CopyToAsync(combinedStream);
+            await ms.DisposeAsync();
+        }
+
+        combinedStream.Position = 0;
+
         return new AppendModel
         {
             FilepathToAppend = filepathToSaveName,
-            MemoryStream = ms
+            MemoryStream = combinedStream
         };
-    }
-
-    public async Task<MemoryStream> ExtractBlockToMemoryStreamAsync(string htmlContent, string blockNode)
-    {
-        if (string.IsNullOrEmpty(htmlContent))
-            return new MemoryStream();
-
-        try
-        {
-            var doc = new HtmlDocument();
-            doc.LoadHtml(htmlContent);
-
-            var textNodes = doc.DocumentNode.SelectNodes(blockNode);
-
-            if (textNodes is null)
-            {
-                Console.WriteLine($"\t Skipped block node: {blockNode}");
-                return new MemoryStream();
-            }
-
-            var extractedContent = new StringBuilder();
-            foreach (var node in textNodes)
-            {
-                extractedContent.AppendLine(node.InnerHtml);
-            }
-
-            var memoryStream = new MemoryStream();
-            var writer = new StreamWriter(memoryStream);
-            await writer.WriteAsync(extractedContent.ToString());
-            await writer.FlushAsync();
-            memoryStream.Position = 0;
-
-            return memoryStream;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error extracting blocks: {ex.Message}");
-            return new MemoryStream();
-        }
-    }
-
-    private static async Task<IPage> GetBrowserPageAsync()
-    {
-        var options = new LaunchOptions { Headless = true };
-        await new BrowserFetcher().DownloadAsync();
-        var browser = await Puppeteer.LaunchAsync(options);
-        var page = await browser.NewPageAsync();
-
-        return page;
     }
 
     public async Task<int> GetHighestItemIndexOnPage(string pageUrl, string upperNodeXpath)
     {
-        var page = await GetBrowserPageAsync();
-
-        await page.GoToAsync(pageUrl, new NavigationOptions()
-        {
-            Timeout = 0,
-            WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
-        });
-
+        await using var page = await _browserService.GetPageAsync();
+        await NavigateToPageAsync(page, pageUrl);
         var pageContentHtml = await page.GetContentAsync();
 
         var doc = new HtmlDocument();
@@ -122,8 +76,15 @@ public class ScrappingService : IScrappingService
         var links = mediaBodies.Select(node => node.GetAttributeValue("href", string.Empty))
             .Where(href => !string.IsNullOrEmpty(href)).ToList();
 
-        var highestId = LinkParserHelper.GetHighestItemId(links);
+        return _contentExtractor.GetHighestItemIndex(links);
+    }
 
-        return highestId;
+    private static async Task NavigateToPageAsync(IPage page, string url)
+    {
+        await page.GoToAsync(url, new NavigationOptions
+        {
+            Timeout = 0,
+            WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
+        });
     }
 }

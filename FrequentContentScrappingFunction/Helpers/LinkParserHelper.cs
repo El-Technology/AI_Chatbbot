@@ -4,7 +4,8 @@ namespace FrequentContentScrappingFunction.Helpers;
 
 public static class LinkParserHelper
 {
-    const string Pattern = @"ItemI[Dd]=(\d+)";
+    private const string Pattern = @"ItemI[Dd]=(\d+)";
+
     public static int GetHighestItemId(List<string> urls)
     {
         var highestItemId = 0;

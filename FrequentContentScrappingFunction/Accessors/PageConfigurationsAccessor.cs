@@ -17,9 +17,9 @@ public class PageConfigurationsAccessor : IPageConfigurationsAccessor
         return _context.PageConfigurations.ToListAsync();
     }
 
-    public async Task UpdateLastParsedItemIndex(Guid pageConfigId ,int newIndex)
+    public async Task UpdateLastParsedItemIndex(Guid pageConfigId, int newIndex)
     {
-        var pageConfigToUpdate = await GetPageConfigurationByIdAsync(pageConfigId) 
+        var pageConfigToUpdate = await GetPageConfigurationByIdAsync(pageConfigId)
                                  ?? throw new Exception("Page configuration not found");
 
         pageConfigToUpdate.LastParsedItemIndex = newIndex;
